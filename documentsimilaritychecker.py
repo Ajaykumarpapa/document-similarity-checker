@@ -1,27 +1,13 @@
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 import string
 
-# Download NLTK data using a cached function
-@st.cache_resource
-def download_nltk_data():
-    nltk.download("stopwords", quiet=True)
-    nltk.download("punkt", quiet=True)
-
-download_nltk_data()
-
-# Preprocessing function
+# Preprocessing function (simplified as TfidfVectorizer handles tokenization and stopwords)
 def preprocess_text(text):
     text = text.lower()
     text = "".join([char for char in text if char not in string.punctuation])
-    tokens = word_tokenize(text)
-    stop_words = set(stopwords.words("english"))
-    filtered_tokens = [word for word in tokens if word not in stop_words]
-    return " ".join(filtered_tokens)
+    return text
 
 def calculate_similarity(doc1_content, doc2_content):
     if not doc1_content or not doc2_content:
@@ -34,8 +20,8 @@ def calculate_similarity(doc1_content, doc2_content):
     if not processed_doc1 or not processed_doc2:
         return 0.0
 
-    # Create TF-IDF vectorizer
-    vectorizer = TfidfVectorizer()
+    # Create TF-IDF vectorizer with built-in English stop words
+    vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = vectorizer.fit_transform([processed_doc1, processed_doc2])
 
     # Calculate cosine similarity
