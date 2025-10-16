@@ -1,4 +1,3 @@
-
 import streamlit as st
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -7,22 +6,26 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import string
 
-# Download NLTK data if not already present
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+# Download NLTK data using a cached function
+@st.cache_resource
+def download_nltk_data():
+    try:
+        nltk.data.find("corpora/stopwords")
+    except LookupError:
+        nltk.download("stopwords")
+    try:
+        nltk.data.find("tokenizers/punkt")
+    except LookupError:
+        nltk.download("punkt")
+
+download_nltk_data()
 
 # Preprocessing function
 def preprocess_text(text):
     text = text.lower()
     text = ''.join([char for char in text if char not in string.punctuation])
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     filtered_tokens = [word for word in tokens if word not in stop_words]
     return ' '.join(filtered_tokens)
 
@@ -49,22 +52,11 @@ st.title("Document Similarity Checker")
 st.write("Upload two documents (text files) to find their similarity score.")
 
 # File uploaders
-uploaded_file1 = st.file_uploader("Upload Document 1", type=["txt", "pdf", "docx"])
-uploaded_file2 = st.file_uploader("Upload Document 2", type=["txt", "pdf", "docx"])
+uploaded_file1 = st.file_uploader("Upload Document 1", type=["txt"])
+uploaded_file2 = st.file_uploader("Upload Document 2", type=["txt"])
 
 def read_file_content(uploaded_file):
-    if uploaded_file.type == "text/plain":
-        return uploaded_file.read().decode("utf-8")
-    elif uploaded_file.type == "application/pdf":
-        # This requires a PDF reader library, which might not be easily installable/usable in Streamlit Cloud
-        # For simplicity, we'll ask users to upload TXT for now or handle PDF differently.
-        st.warning("PDF reading is not directly supported in this simplified version. Please upload a .txt file or paste content.")
-        return None
-    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        st.warning("DOCX reading is not directly supported in this simplified version. Please upload a .txt file or paste content.")
-        return None
-    else:
-        return uploaded_file.read().decode("utf-8") # Fallback for other text-like files
+    return uploaded_file.read().decode("utf-8")
 
 doc1_content = None
 doc2_content = None
@@ -87,3 +79,5 @@ if st.button("Calculate Similarity"):
         st.progress(similarity)
     else:
         st.warning("Please upload both documents to calculate similarity.")
+
+
