@@ -5,18 +5,25 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import string
+import os
+
+# Set NLTK data path to a persistent directory within the app's directory
+nltk_data_dir = os.path.join(os.path.dirname(__file__), "nltk_data")
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir)
+nltk.data.path.append(nltk_data_dir)
 
 # Download NLTK data using a cached function
 @st.cache_resource
 def download_nltk_data():
     try:
-        nltk.data.find("corpora/stopwords")
+        nltk.data.find("corpora/stopwords", path=[nltk_data_dir])
     except LookupError:
-        nltk.download("stopwords")
+        nltk.download("stopwords", download_dir=nltk_data_dir)
     try:
-        nltk.data.find("tokenizers/punkt")
+        nltk.data.find("tokenizers/punkt", path=[nltk_data_dir])
     except LookupError:
-        nltk.download("punkt")
+        nltk.download("punkt", download_dir=nltk_data_dir)
 
 download_nltk_data()
 
@@ -79,5 +86,7 @@ if st.button("Calculate Similarity"):
         st.progress(similarity)
     else:
         st.warning("Please upload both documents to calculate similarity.")
+
+
 
 
