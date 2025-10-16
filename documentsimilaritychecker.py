@@ -23,7 +23,7 @@ def calculate_similarity(doc1_content, doc2_content):
         return 0.0
 
     # Create TF-IDF vectorizer with built-in English stop words
-    vectorizer = TfidfVectorizer(stop_words='english') # Corrected: 'english' instead of \'english\'
+    vectorizer = TfidfVectorizer(stop_words=\'english\') # Corrected: \'english\' instead of \\\\'english\\\\'
     tfidf_matrix = vectorizer.fit_transform([processed_doc1, processed_doc2])
 
     # Calculate cosine similarity
