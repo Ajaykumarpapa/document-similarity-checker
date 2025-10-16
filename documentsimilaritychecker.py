@@ -5,36 +5,23 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import string
-import os
-
-# Set NLTK data path to a persistent directory within the app's directory
-nltk_data_dir = os.path.join(os.path.dirname(__file__), "nltk_data")
-if not os.path.exists(nltk_data_dir):
-    os.makedirs(nltk_data_dir)
-nltk.data.path.append(nltk_data_dir)
 
 # Download NLTK data using a cached function
 @st.cache_resource
 def download_nltk_data():
-    try:
-        nltk.data.find("corpora/stopwords", path=[nltk_data_dir])
-    except LookupError:
-        nltk.download("stopwords", download_dir=nltk_data_dir)
-    try:
-        nltk.data.find("tokenizers/punkt", path=[nltk_data_dir])
-    except LookupError:
-        nltk.download("punkt", download_dir=nltk_data_dir)
+    nltk.download("stopwords", quiet=True)
+    nltk.download("punkt", quiet=True)
 
 download_nltk_data()
 
 # Preprocessing function
 def preprocess_text(text):
     text = text.lower()
-    text = ''.join([char for char in text if char not in string.punctuation])
+    text = "".join([char for char in text if char not in string.punctuation])
     tokens = word_tokenize(text)
     stop_words = set(stopwords.words("english"))
     filtered_tokens = [word for word in tokens if word not in stop_words]
-    return ' '.join(filtered_tokens)
+    return " ".join(filtered_tokens)
 
 def calculate_similarity(doc1_content, doc2_content):
     if not doc1_content or not doc2_content:
@@ -86,7 +73,6 @@ if st.button("Calculate Similarity"):
         st.progress(similarity)
     else:
         st.warning("Please upload both documents to calculate similarity.")
-
 
 
 
